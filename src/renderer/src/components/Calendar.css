@@ -1,0 +1,262 @@
+.calendar-container {
+  display: flex;
+  gap: 24px;
+  height: calc(100vh - 120px);
+}
+
+.calendar-main {
+  flex: 1;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.calendar-header h2 {
+  font-size: 20px;
+  min-width: 150px;
+  text-align: center;
+}
+
+.month-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-color);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.month-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.today-btn {
+  margin-left: auto;
+  padding: 6px 16px;
+  border-radius: 6px;
+  background: var(--primary-color);
+  color: white;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.today-btn:hover {
+  background: var(--primary-hover);
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 8px 0;
+  font-weight: 500;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 80px;
+}
+
+.calendar-day:hover {
+  background: var(--bg-color);
+}
+
+.calendar-day.other-month {
+  opacity: 0.4;
+}
+
+.calendar-day.today {
+  background: #e8f4ff;
+}
+
+.calendar-day.today .day-number {
+  background: var(--primary-color);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day.selected {
+  background: #e8f4ff;
+  border: 2px solid var(--primary-color);
+}
+
+.day-number {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.event-dots {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-color);
+}
+
+.more-events {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* 侧边栏 */
+.calendar-sidebar {
+  width: 320px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sidebar-header h3 {
+  font-size: 16px;
+  color: var(--text-color);
+}
+
+.add-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: var(--primary-color);
+  color: white;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.add-btn:hover {
+  background: var(--primary-hover);
+}
+
+.event-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.no-events {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 0;
+}
+
+.event-card {
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--bg-color);
+  margin-bottom: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.event-time {
+  font-size: 14px;
+  color: var(--primary-color);
+  font-weight: 500;
+  min-width: 50px;
+}
+
+.event-info {
+  flex: 1;
+}
+
+.event-info h4 {
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.event-location {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.event-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.event-card:hover .event-actions {
+  opacity: 1;
+}
+
+.edit-btn,
+.delete-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: transparent;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.edit-btn:hover {
+  background: #e8f4ff;
+}
+
+.delete-btn:hover {
+  background: #fff1f0;
+}
