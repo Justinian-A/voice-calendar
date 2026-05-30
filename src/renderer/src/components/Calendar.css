@@ -16,13 +16,15 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  padding-top: 4px;
 }
 
 .calendar-header h2 {
   font-size: 20px;
   min-width: 150px;
   text-align: center;
+  font-weight: 600;
 }
 
 .month-btn {
