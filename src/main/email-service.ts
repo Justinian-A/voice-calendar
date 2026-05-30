@@ -23,12 +23,12 @@ class EmailService {
 
   constructor() {
     this.config = {
-      host: 'smtp.163.com',
+      host: 'smtp.qq.com',
       port: 465,
       secure: true,
       auth: {
-        user: 'qinlf678@163.com',
-        pass: 'KDaDThrPkdP5XyZL'
+        user: '2388188947@qq.com',
+        pass: 'cqxoajrwuezpdigb'
       }
     }
   }

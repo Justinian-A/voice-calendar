@@ -148,9 +148,9 @@ export default function SettingsPage(): JSX.Element {
         <h3>📧 邮件服务配置</h3>
         <div className="setting-item">
           <p className="setting-desc">
-            邮件服务已配置为使用163邮箱SMTP发送。
+            邮件服务已配置为使用QQ邮箱SMTP发送。
             <br />
-            发件邮箱：qinlf678@163.com
+            发件邮箱：2388188947@qq.com
           </p>
         </div>
       </div>
