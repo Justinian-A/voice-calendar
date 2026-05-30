@@ -39,7 +39,7 @@ export default function VoicePage({ onEventCreated }: VoicePageProps): JSX.Eleme
           await handleSearchEvents(command)
           break
         default:
-          setConfirmMessage('❓ 未能识别您的指令，请重试。可以说"添加明天下午三点开会"')
+          setConfirmMessage('❓ 未能识别您的指令，请重试。\n\n💡 提示：请在句子中加入关键词，如"添加"、"删除"、"查看"等。')
       }
     } catch (err) {
       setError('处理失败，请重试')
@@ -182,39 +182,37 @@ export default function VoicePage({ onEventCreated }: VoicePageProps): JSX.Eleme
         </div>
       )}
 
-      <div className="voice-examples">
-        <h3>💡 语音指令示例</h3>
-        <div className="examples-grid">
-          <div className="example-card">
-            <h4>📅 添加事件</h4>
-            <ul>
-              <li>"添加明天下午三点开会"</li>
-              <li>"创建下周一上午10点面试"</li>
-              <li>"安排后天晚上聚餐"</li>
-            </ul>
+      {/* 使用提示卡片 */}
+      <div className="usage-tips-card">
+        <div className="tips-header">
+          <span className="tips-icon">💡</span>
+          <h3>使用提示</h3>
+        </div>
+        <div className="tips-content">
+          <p className="tip-main">
+            请在语音中加入<strong>动作关键词</strong>，系统才能准确识别您的意图：
+          </p>
+          <div className="keywords-grid">
+            <div className="keyword-item add">
+              <span className="keyword">添加</span>
+              <span className="keyword-example">"添加明天下午三点开会"</span>
+            </div>
+            <div className="keyword-item delete">
+              <span className="keyword">删除</span>
+              <span className="keyword-example">"删除明天的会议"</span>
+            </div>
+            <div className="keyword-item view">
+              <span className="keyword">查看</span>
+              <span className="keyword-example">"查看今天的日程"</span>
+            </div>
+            <div className="keyword-item search">
+              <span className="keyword">搜索</span>
+              <span className="keyword-example">"搜索会议"</span>
+            </div>
           </div>
-          <div className="example-card">
-            <h4>🗑️ 删除事件</h4>
-            <ul>
-              <li>"删除明天的会议"</li>
-              <li>"取消下周一的面试"</li>
-            </ul>
-          </div>
-          <div className="example-card">
-            <h4>📋 查看日程</h4>
-            <ul>
-              <li>"查看今天的日程"</li>
-              <li>"明天有什么安排"</li>
-              <li>"看看下周一的安排"</li>
-            </ul>
-          </div>
-          <div className="example-card">
-            <h4>🔍 搜索事件</h4>
-            <ul>
-              <li>"搜索会议"</li>
-              <li>"查找面试"</li>
-            </ul>
-          </div>
+          <p className="tip-note">
+            💡 智能提示：如果您说的内容包含时间（如"明天上午十点"），系统会自动识别为添加事件。
+          </p>
         </div>
       </div>
     </div>

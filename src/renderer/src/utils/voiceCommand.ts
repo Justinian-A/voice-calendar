@@ -146,8 +146,11 @@ function extractTitle(text: string, action: string): string {
   title = title.replace(/\d{1,2}月\d{1,2}[日号]/g, '')
   title = title.replace(/[周星][一二三四五六日天]/g, '')
 
+  // 移除"有"、"要"等连接词
+  title = title.replace(/^[有要]/, '')
+
   // 清理多余空格和标点
-  title = title.replace(/[，。！？,\.!\?]/g, '').trim()
+  title = title.replace(/[，。！？,\.!\?的]/g, '').trim()
   title = title.replace(/\s+/g, ' ')
 
   // 如果标题为空，使用默认值
@@ -158,6 +161,29 @@ function extractTitle(text: string, action: string): string {
   }
 
   return title
+}
+
+// 检测是否包含时间/日期信息
+function hasTimeOrDate(text: string): boolean {
+  // 检查是否有日期关键词
+  for (const keyword of Object.keys(DATE_KEYWORDS)) {
+    if (text.includes(keyword)) return true
+  }
+
+  // 检查是否有星期关键词
+  for (const keyword of Object.keys(WEEKDAY_MAP)) {
+    if (text.includes(keyword)) return true
+  }
+
+  // 检查是否有日期格式
+  if (/\d{1,2}月\d{1,2}[日号]/.test(text)) return true
+
+  // 检查是否有时间格式
+  if (/[上下]午?\d{1,2}[点时]/.test(text)) return true
+  if (/\d{1,2}:\d{2}/.test(text)) return true
+  if (/\d{1,2}点半/.test(text)) return true
+
+  return false
 }
 
 // 解析语音指令
@@ -176,6 +202,11 @@ export function parseVoiceCommand(text: string): ParsedCommand {
     result.action = 'view'
   } else if (/搜索|找|查找/.test(text)) {
     result.action = 'search'
+  }
+
+  // 智能推断：如果没有明确的动作关键词，但包含时间/日期信息，默认为添加事件
+  if (result.action === 'unknown' && hasTimeOrDate(text)) {
+    result.action = 'add'
   }
 
   // 解析日期
