@@ -16,6 +16,7 @@ export default function VoiceInput({ onResult, onError }: VoiceInputProps): JSX.
   const audioChunksRef = useRef<Blob[]>([])
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
 
   // 开始录音
   const startRecording = useCallback(async () => {
@@ -31,6 +32,9 @@ export default function VoiceInput({ onResult, onError }: VoiceInputProps): JSX.
 
       streamRef.current = stream
       audioChunksRef.current = []
+
+      // 创建音频上下文
+      audioContextRef.current = new AudioContext({ sampleRate: 16000 })
 
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus'
@@ -48,13 +52,12 @@ export default function VoiceInput({ onResult, onError }: VoiceInputProps): JSX.
       }
 
       mediaRecorderRef.current = mediaRecorder
-      mediaRecorder.start(100) // 每100ms收集一次数据
+      mediaRecorder.start(100)
 
       setState('recording')
       setRecordingTime(0)
       setTranscript('')
 
-      // 开始计时
       timerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1)
       }, 1000)
@@ -70,13 +73,11 @@ export default function VoiceInput({ onResult, onError }: VoiceInputProps): JSX.
       mediaRecorderRef.current.stop()
       setState('processing')
 
-      // 停止计时
       if (timerRef.current) {
         clearInterval(timerRef.current)
         timerRef.current = null
       }
 
-      // 停止麦克风
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop())
         streamRef.current = null
@@ -105,22 +106,41 @@ export default function VoiceInput({ onResult, onError }: VoiceInputProps): JSX.
     audioChunksRef.current = []
   }, [])
 
+  // 将webm转换为PCM base64
+  const convertToPCM = async (audioBlob: Blob): Promise<{ base64: string; length: number }> => {
+    const audioContext = audioContextRef.current || new AudioContext({ sampleRate: 16000 })
+    const arrayBuffer = await audioBlob.arrayBuffer()
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+
+    // 获取单声道数据
+    const channelData = audioBuffer.getChannelData(0)
+    
+    // 转换为16bit PCM
+    const pcmData = new Int16Array(channelData.length)
+    for (let i = 0; i < channelData.length; i++) {
+      const s = Math.max(-1, Math.min(1, channelData[i]))
+      pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF
+    }
+
+    // 转换为base64
+    const uint8Array = new Uint8Array(pcmData.buffer)
+    let binary = ''
+    for (let i = 0; i < uint8Array.length; i++) {
+      binary += String.fromCharCode(uint8Array[i])
+    }
+    const base64 = btoa(binary)
+
+    return { base64, length: uint8Array.length }
+  }
+
   // 处理音频
   const processAudio = async (audioBlob: Blob) => {
     try {
-      // 将webm转换为wav（简化处理，实际可能需要更复杂的转换）
-      const arrayBuffer = await audioBlob.arrayBuffer()
-      const uint8Array = new Uint8Array(arrayBuffer)
-      
-      // 转换为base64
-      let binary = ''
-      for (let i = 0; i < uint8Array.length; i++) {
-        binary += String.fromCharCode(uint8Array[i])
-      }
-      const base64 = btoa(binary)
+      // 转换为PCM格式
+      const { base64, length } = await convertToPCM(audioBlob)
 
       // 调用语音识别
-      const result = await window.api.speech.recognize(base64)
+      const result = await window.api.speech.recognizeWithLength(base64, length)
 
       if (result.success && result.data) {
         setTranscript(result.data)
@@ -137,7 +157,6 @@ export default function VoiceInput({ onResult, onError }: VoiceInputProps): JSX.
     }
   }
 
-  // 格式化时间
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60

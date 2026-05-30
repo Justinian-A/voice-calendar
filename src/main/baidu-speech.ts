@@ -27,7 +27,6 @@ class BaiduSpeechService {
 
   // 获取访问令牌
   private async getAccessToken(): Promise<string> {
-    // 如果token还有效，直接返回
     if (this.accessToken && Date.now() < this.tokenExpiry) {
       return this.accessToken
     }
@@ -37,7 +36,6 @@ class BaiduSpeechService {
       const response = await axios.post<TokenResponse>(url)
       
       this.accessToken = response.data.access_token
-      // token有效期通常为30天，提前1天刷新
       this.tokenExpiry = Date.now() + (response.data.expires_in - 86400) * 1000
       
       return this.accessToken
@@ -47,11 +45,14 @@ class BaiduSpeechService {
     }
   }
 
-  // 语音识别（base64格式）
-  async recognizeSpeech(audioBase64: string, format: string = 'wav', rate: number = 16000): Promise<string> {
+  // 语音识别
+  async recognizeSpeech(audioBase64: string, format: string = 'pcm', rate: number = 16000, len?: number): Promise<string> {
     try {
       const token = await this.getAccessToken()
       const url = 'https://vop.baidu.com/server_api'
+
+      // 计算音频长度（如果没有传入）
+      const audioLen = len || Math.floor(audioBase64.length * 3 / 4)
 
       const data = {
         format: format,
@@ -60,8 +61,10 @@ class BaiduSpeechService {
         cuid: 'voice-calendar-app',
         token: token,
         speech: audioBase64,
-        len: Math.floor(audioBase64.length * 3 / 4) // base64解码后的长度
+        len: audioLen
       }
+
+      console.log('发送语音识别请求:', { format, rate, len: audioLen })
 
       const response = await axios.post<SpeechRecognitionResult>(url, data, {
         headers: {
@@ -80,10 +83,10 @@ class BaiduSpeechService {
     }
   }
 
-  // 语音识别（文件路径方式，用于主进程）
-  async recognizeAudioFile(audioBuffer: Buffer, format: string = 'wav', rate: number = 16000): Promise<string> {
+  // 语音识别（文件路径方式）
+  async recognizeAudioFile(audioBuffer: Buffer, format: string = 'pcm', rate: number = 16000): Promise<string> {
     const base64 = audioBuffer.toString('base64')
-    return this.recognizeSpeech(base64, format, rate)
+    return this.recognizeSpeech(base64, format, rate, audioBuffer.length)
   }
 }
 

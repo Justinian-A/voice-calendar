@@ -97,7 +97,17 @@ export function registerIpcHandlers(): void {
   // 语音识别
   ipcMain.handle('speech:recognize', async (_, audioBase64: string) => {
     try {
-      const result = await baiduSpeech.recognizeSpeech(audioBase64, 'wav', 16000)
+      const result = await baiduSpeech.recognizeSpeech(audioBase64, 'pcm', 16000)
+      return { success: true, data: result }
+    } catch (error) {
+      return { success: false, error: (error as Error).message }
+    }
+  })
+
+  // 语音识别（带长度）
+  ipcMain.handle('speech:recognizeWithLength', async (_, audioBase64: string, length: number) => {
+    try {
+      const result = await baiduSpeech.recognizeSpeech(audioBase64, 'pcm', 16000, length)
       return { success: true, data: result }
     } catch (error) {
       return { success: false, error: (error as Error).message }

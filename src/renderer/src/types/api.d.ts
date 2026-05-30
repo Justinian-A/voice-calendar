@@ -36,6 +36,7 @@ export interface EventApi {
 
 export interface SpeechApi {
   recognize: (audioBase64: string) => Promise<ApiResponse<string>>
+  recognizeWithLength: (audioBase64: string, length: number) => Promise<ApiResponse<string>>
 }
 
 export interface SettingsApi {

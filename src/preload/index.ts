@@ -28,7 +28,8 @@ const eventApi = {
 }
 
 const speechApi = {
-  recognize: (audioBase64: string) => ipcRenderer.invoke('speech:recognize', audioBase64)
+  recognize: (audioBase64: string) => ipcRenderer.invoke('speech:recognize', audioBase64),
+  recognizeWithLength: (audioBase64: string, length: number) => ipcRenderer.invoke('speech:recognizeWithLength', audioBase64, length)
 }
 
 const settingsApi = {
