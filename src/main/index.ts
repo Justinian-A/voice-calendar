@@ -6,6 +6,9 @@ import { registerIpcHandlers } from './ipc-handlers'
 import { emailService } from './email-service'
 import { reminderScheduler } from './reminder-scheduler'
 
+// 禁用代理，避免网络连接被劫持
+app.commandLine.appendSwitch('no-proxy-server')
+
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 1200,
