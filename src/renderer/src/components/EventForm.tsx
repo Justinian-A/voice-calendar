@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { CalendarEvent } from '../types/api'
+import { CalendarEvent, CATEGORIES, getCategoryColor } from '../types/api'
 import './EventForm.css'
 
 interface EventFormProps {
@@ -12,11 +12,12 @@ interface EventFormProps {
 export default function EventForm({ event, selectedDate, onSave, onCancel }: EventFormProps): JSX.Element {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [startDate, setStartDate] = useState(selectedDate)
-  const [startTime, setStartTime] = useState('09:00')
-  const [endDate, setEndDate] = useState(selectedDate)
+  const [startDate, setStartDate] = useState(selectedDate.split(' ')[0] || selectedDate)
+  const [startTime, setStartTime] = useState(selectedDate.split(' ')[1]?.substring(0, 5) || '09:00')
+  const [endDate, setEndDate] = useState(selectedDate.split(' ')[0] || selectedDate)
   const [endTime, setEndTime] = useState('10:00')
   const [location, setLocation] = useState('')
+  const [category, setCategory] = useState('other')
   const [reminderMinutes, setReminderMinutes] = useState(15)
   const [isAllDay, setIsAllDay] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -26,6 +27,7 @@ export default function EventForm({ event, selectedDate, onSave, onCancel }: Eve
       setTitle(event.title)
       setDescription(event.description || '')
       setLocation(event.location || '')
+      setCategory(event.category || 'other')
       setReminderMinutes(event.reminder_minutes || 15)
       setIsAllDay(event.is_all_day || false)
 
@@ -64,6 +66,7 @@ export default function EventForm({ event, selectedDate, onSave, onCancel }: Eve
       start_time: isAllDay ? `${startDate} 00:00:00` : `${startDate} ${startTime}:00`,
       end_time: isAllDay ? `${endDate} 23:59:59` : `${endDate} ${endTime}:00`,
       location: location.trim() || undefined,
+      category,
       reminder_minutes: reminderMinutes,
       is_all_day: isAllDay
     }
@@ -124,6 +127,27 @@ export default function EventForm({ event, selectedDate, onSave, onCancel }: Eve
               placeholder="输入事件描述（可选）"
               rows={3}
             />
+          </div>
+
+          <div className="form-group">
+            <label>分类</label>
+            <div className="category-selector">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  className={`category-option ${category === cat.id ? 'active' : ''}`}
+                  style={{
+                    backgroundColor: category === cat.id ? cat.color : 'transparent',
+                    borderColor: cat.color,
+                    color: category === cat.id ? 'white' : cat.color
+                  }}
+                  onClick={() => setCategory(cat.id)}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="form-group">

@@ -10,11 +10,21 @@ export interface CalendarEvent {
   start_time: string
   end_time?: string
   location?: string
+  category?: string
   reminder_minutes?: number
   is_all_day?: boolean
   created_at?: string
   updated_at?: string
 }
+
+export const CATEGORIES = [
+  { id: 'work', name: '工作', color: '#4a90e2' },
+  { id: 'personal', name: '个人', color: '#52c41a' },
+  { id: 'meeting', name: '会议', color: '#faad14' },
+  { id: 'health', name: '健康', color: '#ff4d4f' },
+  { id: 'study', name: '学习', color: '#722ed1' },
+  { id: 'other', name: '其他', color: '#8c8c8c' }
+]
 
 class DatabaseManager {
   private db: Database | null = null
@@ -47,12 +57,20 @@ class DatabaseManager {
         start_time TEXT NOT NULL,
         end_time TEXT,
         location TEXT,
+        category TEXT DEFAULT 'other',
         reminder_minutes INTEGER DEFAULT 15,
         is_all_day INTEGER DEFAULT 0,
         created_at TEXT DEFAULT (datetime('now', 'localtime')),
         updated_at TEXT DEFAULT (datetime('now', 'localtime'))
       )
     `)
+
+    // 尝试添加category列（如果不存在）
+    try {
+      this.db.run('ALTER TABLE events ADD COLUMN category TEXT DEFAULT "other"')
+    } catch (e) {
+      // 列已存在，忽略错误
+    }
   }
 
   private save(): void {
@@ -67,14 +85,15 @@ class DatabaseManager {
     if (!this.db) throw new Error('Database not initialized')
 
     this.db.run(
-      `INSERT INTO events (title, description, start_time, end_time, location, reminder_minutes, is_all_day)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO events (title, description, start_time, end_time, location, category, reminder_minutes, is_all_day)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         event.title,
         event.description || null,
         event.start_time,
         event.end_time || null,
         event.location || null,
+        event.category || 'other',
         event.reminder_minutes || 15,
         event.is_all_day ? 1 : 0
       ]
@@ -118,6 +137,16 @@ class DatabaseManager {
     return this.getEventsByDateRange(startDate, endDate)
   }
 
+  // 获取指定分类的事件
+  getEventsByCategory(category: string): CalendarEvent[] {
+    if (!this.db) throw new Error('Database not initialized')
+    const result = this.db.exec(
+      'SELECT * FROM events WHERE category = ? ORDER BY start_time',
+      [category]
+    )
+    return this.mapResult(result)
+  }
+
   // 更新事件
   updateEvent(id: number, event: Partial<CalendarEvent>): CalendarEvent | null {
     if (!this.db) throw new Error('Database not initialized')
@@ -130,6 +159,7 @@ class DatabaseManager {
     if (event.start_time !== undefined) { fields.push('start_time = ?'); values.push(event.start_time) }
     if (event.end_time !== undefined) { fields.push('end_time = ?'); values.push(event.end_time) }
     if (event.location !== undefined) { fields.push('location = ?'); values.push(event.location) }
+    if (event.category !== undefined) { fields.push('category = ?'); values.push(event.category) }
     if (event.reminder_minutes !== undefined) { fields.push('reminder_minutes = ?'); values.push(event.reminder_minutes) }
     if (event.is_all_day !== undefined) { fields.push('is_all_day = ?'); values.push(event.is_all_day ? 1 : 0) }
 

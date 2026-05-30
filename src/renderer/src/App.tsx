@@ -1,11 +1,17 @@
 import { useState, useCallback } from 'react'
 import Calendar from './components/Calendar'
+import WeekView from './components/WeekView'
+import DayView from './components/DayView'
 import VoicePage from './components/VoicePage'
 import SettingsPage from './components/SettingsPage'
 import './styles/app.css'
 
+type CalendarView = 'month' | 'week' | 'day'
+type AppTab = 'calendar' | 'voice' | 'settings'
+
 function App(): JSX.Element {
-  const [activeTab, setActiveTab] = useState<'calendar' | 'voice' | 'settings'>('voice')
+  const [activeTab, setActiveTab] = useState<AppTab>('voice')
+  const [calendarView, setCalendarView] = useState<CalendarView>('month')
   const [calendarKey, setCalendarKey] = useState(0)
 
   // 当语音创建事件后，刷新日历
@@ -40,7 +46,33 @@ function App(): JSX.Element {
       </header>
 
       <main className="app-main">
-        {activeTab === 'calendar' && <Calendar key={calendarKey} />}
+        {activeTab === 'calendar' && (
+          <div className="calendar-container">
+            <div className="calendar-view-tabs">
+              <button
+                className={calendarView === 'month' ? 'active' : ''}
+                onClick={() => setCalendarView('month')}
+              >
+                月
+              </button>
+              <button
+                className={calendarView === 'week' ? 'active' : ''}
+                onClick={() => setCalendarView('week')}
+              >
+                周
+              </button>
+              <button
+                className={calendarView === 'day' ? 'active' : ''}
+                onClick={() => setCalendarView('day')}
+              >
+                日
+              </button>
+            </div>
+            {calendarView === 'month' && <Calendar key={calendarKey} />}
+            {calendarView === 'week' && <WeekView key={calendarKey} />}
+            {calendarView === 'day' && <DayView key={calendarKey} />}
+          </div>
+        )}
         {activeTab === 'voice' && <VoicePage onEventCreated={handleEventCreated} />}
         {activeTab === 'settings' && <SettingsPage />}
       </main>

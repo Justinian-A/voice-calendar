@@ -5,10 +5,36 @@ export interface CalendarEvent {
   start_time: string
   end_time?: string
   location?: string
+  category?: string
   reminder_minutes?: number
   is_all_day?: boolean
   created_at?: string
   updated_at?: string
+}
+
+export interface Category {
+  id: string
+  name: string
+  color: string
+}
+
+export const CATEGORIES: Category[] = [
+  { id: 'work', name: '工作', color: '#4a90e2' },
+  { id: 'personal', name: '个人', color: '#52c41a' },
+  { id: 'meeting', name: '会议', color: '#faad14' },
+  { id: 'health', name: '健康', color: '#ff4d4f' },
+  { id: 'study', name: '学习', color: '#722ed1' },
+  { id: 'other', name: '其他', color: '#8c8c8c' }
+]
+
+export function getCategoryColor(categoryId: string): string {
+  const category = CATEGORIES.find(c => c.id === categoryId)
+  return category?.color || '#8c8c8c'
+}
+
+export function getCategoryName(categoryId: string): string {
+  const category = CATEGORIES.find(c => c.id === categoryId)
+  return category?.name || '其他'
 }
 
 export interface ApiResponse<T = any> {

@@ -113,6 +113,29 @@ form {
   gap: 16px;
 }
 
+.category-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-option {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 2px solid;
+  transition: all 0.2s;
+}
+
+.category-option:hover {
+  opacity: 0.8;
+}
+
+.category-option.active {
+  transform: scale(1.05);
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
