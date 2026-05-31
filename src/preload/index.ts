@@ -39,10 +39,18 @@ const settingsApi = {
   testNotification: () => ipcRenderer.invoke('settings:testNotification')
 }
 
+const dataApi = {
+  exportJSON: () => ipcRenderer.invoke('data:exportJSON'),
+  exportCSV: () => ipcRenderer.invoke('data:exportCSV'),
+  importJSON: () => ipcRenderer.invoke('data:importJSON'),
+  importCSV: () => ipcRenderer.invoke('data:importCSV')
+}
+
 const api = {
   event: eventApi,
   speech: speechApi,
-  settings: settingsApi
+  settings: settingsApi,
+  data: dataApi
 }
 
 if (process.contextIsolated) {

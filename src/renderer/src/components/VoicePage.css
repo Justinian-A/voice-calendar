@@ -197,6 +197,14 @@
   border-left-color: #722ed1;
 }
 
+.keyword-item.modify {
+  border-left-color: #faad14;
+}
+
+.keyword-item.week {
+  border-left-color: #13c2c2;
+}
+
 .keyword {
   font-weight: 600;
   font-size: 14px;
@@ -217,6 +225,14 @@
 
 .keyword-item.search .keyword {
   color: #722ed1;
+}
+
+.keyword-item.modify .keyword {
+  color: #faad14;
+}
+
+.keyword-item.week .keyword {
+  color: #13c2c2;
 }
 
 .keyword-example {

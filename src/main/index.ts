@@ -9,6 +9,13 @@ import { reminderScheduler } from './reminder-scheduler'
 // 禁用代理，避免网络连接被劫持
 app.commandLine.appendSwitch('no-proxy-server')
 
+// 设置环境变量禁用代理（影响 Node.js 的网络请求）
+process.env.NO_PROXY = '*'
+process.env.HTTP_PROXY = ''
+process.env.HTTPS_PROXY = ''
+process.env.http_proxy = ''
+process.env.https_proxy = ''
+
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 1200,

@@ -1,5 +1,5 @@
 export interface ParsedCommand {
-  action: 'add' | 'delete' | 'view' | 'search' | 'unknown'
+  action: 'add' | 'delete' | 'view' | 'search' | 'modify' | 'week' | 'unknown'
   title?: string
   date?: string
   time?: string
@@ -53,6 +53,20 @@ function formatDate(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
+}
+
+// 获取本周的开始和结束日期
+export function getWeekRange(): { start: string; end: string } {
+  const today = new Date()
+  const dayOfWeek = today.getDay()
+  const startOfWeek = new Date(today)
+  startOfWeek.setDate(today.getDate() - dayOfWeek)
+  const endOfWeek = new Date(startOfWeek)
+  endOfWeek.setDate(startOfWeek.getDate() + 6)
+  return {
+    start: formatDate(startOfWeek),
+    end: formatDate(endOfWeek)
+  }
 }
 
 // 解析日期
@@ -127,13 +141,13 @@ function parseTime(text: string): string | undefined {
 function extractTitle(text: string, action: string): string {
   // 移除动作关键词
   let title = text
-  const actionKeywords = ['添加', '新建', '创建', '增加', '删除', '移除', '取消', '查看', '查询', '看看', '显示']
+  const actionKeywords = ['添加', '新建', '创建', '增加', '删除', '移除', '取消', '查看', '查询', '看看', '显示', '修改', '更改', '改变', '调整', '本周', '这周', '下周']
   for (const keyword of actionKeywords) {
     title = title.replace(keyword, '')
   }
 
   // 移除日期和时间相关词汇
-  const removeWords = ['今天', '明天', '后天', '大后天', '昨天', '上午', '下午', '晚上', '早上']
+  const removeWords = ['今天', '明天', '后天', '大后天', '昨天', '上午', '下午', '晚上', '早上', '的', '有什么', '安排', '日程', '事件']
   for (const word of removeWords) {
     title = title.replace(word, '')
   }
@@ -198,6 +212,10 @@ export function parseVoiceCommand(text: string): ParsedCommand {
     result.action = 'add'
   } else if (/删除|移除|取消|去掉/.test(text)) {
     result.action = 'delete'
+  } else if (/修改|更改|改变|调整/.test(text)) {
+    result.action = 'modify'
+  } else if (/本周|这周|周[一二三四五六日天]|星期[一二三四五六日天]/.test(text) && /日程|安排|有什么|事件/.test(text)) {
+    result.action = 'week'
   } else if (/查看|查询|看看|显示|有什么|日程|安排/.test(text)) {
     result.action = 'view'
   } else if (/搜索|找|查找/.test(text)) {
@@ -231,20 +249,26 @@ export function parseVoiceCommand(text: string): ParsedCommand {
 export function generateConfirmMessage(command: ParsedCommand): string {
   switch (command.action) {
     case 'add':
-      let msg = `✅ 已添加事件：${command.title}`
-      if (command.date) msg += `，日期：${command.date}`
-      if (command.time) msg += `，时间：${command.time}`
-      if (command.location) msg += `，地点：${command.location}`
-      return msg
+      let addMsg = `✅ 已添加事件：${command.title}`
+      if (command.date) addMsg += `，日期：${command.date}`
+      if (command.time) addMsg += `，时间：${command.time}`
+      if (command.location) addMsg += `，地点：${command.location}`
+      return addMsg
 
     case 'delete':
       return `🗑️ 已删除匹配"${command.title || command.date}"的事件`
+
+    case 'modify':
+      return `✏️ 正在修改事件：${command.title || command.date}`
 
     case 'view':
       if (command.date) {
         return `📅 正在查看 ${command.date} 的日程`
       }
       return '📅 正在查看今天的日程'
+
+    case 'week':
+      return '📅 正在查看本周日程'
 
     case 'search':
       return `🔍 正在搜索：${command.title}`

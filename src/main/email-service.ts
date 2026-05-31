@@ -24,8 +24,8 @@ class EmailService {
   constructor() {
     this.config = {
       host: 'smtp.qq.com',
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
       auth: {
         user: '2388188947@qq.com',
         pass: 'cqxoajrwuezpdigb'
@@ -36,7 +36,17 @@ class EmailService {
   // 初始化邮件服务
   async init(): Promise<boolean> {
     try {
-      this.transporter = nodemailer.createTransport(this.config)
+      // 禁用代理
+      this.transporter = nodemailer.createTransport({
+        ...this.config,
+        tls: {
+          rejectUnauthorized: false
+        },
+        // 强制不使用代理
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000
+      })
       
       // 验证连接
       await this.transporter.verify()

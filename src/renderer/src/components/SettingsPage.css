@@ -150,3 +150,60 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* 数据管理样式 */
+.data-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.data-group h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 12px;
+}
+
+.data-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.data-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.data-btn.export {
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  color: #52c41a;
+}
+
+.data-btn.export:hover:not(:disabled) {
+  background: #d9f7be;
+}
+
+.data-btn.import {
+  background: #e6f7ff;
+  border: 1px solid #91d5ff;
+  color: #1890ff;
+}
+
+.data-btn.import:hover:not(:disabled) {
+  background: #bae7ff;
+}
+
+.data-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

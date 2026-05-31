@@ -72,10 +72,18 @@ export interface SettingsApi {
   testNotification: () => Promise<ApiResponse<boolean>>
 }
 
+export interface DataApi {
+  exportJSON: () => Promise<ApiResponse<string>>
+  exportCSV: () => Promise<ApiResponse<string>>
+  importJSON: () => Promise<ApiResponse<number>>
+  importCSV: () => Promise<ApiResponse<number>>
+}
+
 export interface ElectronApi {
   event: EventApi
   speech: SpeechApi
   settings: SettingsApi
+  data: DataApi
 }
 
 declare global {

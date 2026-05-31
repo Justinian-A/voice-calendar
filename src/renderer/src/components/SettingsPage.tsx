@@ -85,6 +85,82 @@ export default function SettingsPage(): JSX.Element {
     }
   }
 
+  // 导出JSON
+  const handleExportJSON = async () => {
+    setLoading(true)
+    setMessage(null)
+
+    try {
+      const result = await window.api.data.exportJSON()
+      if (result.success) {
+        setMessage({ type: 'success', text: `导出成功：${result.data}` })
+      } else {
+        setMessage({ type: 'error', text: result.error || '导出失败' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: '导出失败' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // 导出CSV
+  const handleExportCSV = async () => {
+    setLoading(true)
+    setMessage(null)
+
+    try {
+      const result = await window.api.data.exportCSV()
+      if (result.success) {
+        setMessage({ type: 'success', text: `导出成功：${result.data}` })
+      } else {
+        setMessage({ type: 'error', text: result.error || '导出失败' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: '导出失败' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // 导入JSON
+  const handleImportJSON = async () => {
+    setLoading(true)
+    setMessage(null)
+
+    try {
+      const result = await window.api.data.importJSON()
+      if (result.success) {
+        setMessage({ type: 'success', text: `导入成功，共 ${result.data} 条事件` })
+      } else {
+        setMessage({ type: 'error', text: result.error || '导入失败' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: '导入失败' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // 导入CSV
+  const handleImportCSV = async () => {
+    setLoading(true)
+    setMessage(null)
+
+    try {
+      const result = await window.api.data.importCSV()
+      if (result.success) {
+        setMessage({ type: 'success', text: `导入成功，共 ${result.data} 条事件` })
+      } else {
+        setMessage({ type: 'error', text: result.error || '导入失败' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: '导入失败' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="settings-page">
       <h2>⚙️ 设置</h2>
@@ -152,6 +228,37 @@ export default function SettingsPage(): JSX.Element {
             <br />
             发件邮箱：2388188947@qq.com
           </p>
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <h3>💾 数据管理</h3>
+        <p className="setting-desc">导出或导入您的日历事件数据</p>
+
+        <div className="data-actions">
+          <div className="data-group">
+            <h4>导出数据</h4>
+            <div className="data-buttons">
+              <button className="data-btn export" onClick={handleExportJSON} disabled={loading}>
+                📄 导出JSON
+              </button>
+              <button className="data-btn export" onClick={handleExportCSV} disabled={loading}>
+                📊 导出CSV
+              </button>
+            </div>
+          </div>
+
+          <div className="data-group">
+            <h4>导入数据</h4>
+            <div className="data-buttons">
+              <button className="data-btn import" onClick={handleImportJSON} disabled={loading}>
+                📄 导入JSON
+              </button>
+              <button className="data-btn import" onClick={handleImportCSV} disabled={loading}>
+                📊 导入CSV
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
