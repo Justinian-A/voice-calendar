@@ -45,8 +45,6 @@ export interface ApiResponse<T = any> {
 
 export interface ReminderSettings {
   enableNotification: boolean
-  enableEmail: boolean
-  emailAddress: string
 }
 
 export interface EventApi {
@@ -68,7 +66,6 @@ export interface SpeechApi {
 export interface SettingsApi {
   getReminder: () => Promise<ApiResponse<ReminderSettings>>
   updateReminder: (settings: Partial<ReminderSettings>) => Promise<ApiResponse<ReminderSettings>>
-  testEmail: (emailAddress: string) => Promise<ApiResponse<boolean>>
   testNotification: () => Promise<ApiResponse<boolean>>
 }
 

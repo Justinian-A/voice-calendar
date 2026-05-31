@@ -1,20 +1,15 @@
 import { database, CalendarEvent } from './database'
 import { notificationService } from './notification-service'
-import { emailService } from './email-service'
 
 interface ReminderSettings {
   enableNotification: boolean
-  enableEmail: boolean
-  emailAddress: string
 }
 
 class ReminderScheduler {
   private checkInterval: NodeJS.Timeout | null = null
   private remindedEvents: Set<number> = new Set()
   private settings: ReminderSettings = {
-    enableNotification: true,
-    enableEmail: false,
-    emailAddress: ''
+    enableNotification: true
   }
 
   // 初始化调度器
@@ -92,20 +87,6 @@ class ReminderScheduler {
         timeStr,
         event.location
       )
-    }
-
-    // 发送邮件提醒
-    if (this.settings.enableEmail && this.settings.emailAddress) {
-      try {
-        await emailService.sendEventReminder(
-          this.settings.emailAddress,
-          event.title,
-          timeStr,
-          event.location
-        )
-      } catch (error) {
-        console.error('邮件提醒发送失败:', error)
-      }
     }
   }
 

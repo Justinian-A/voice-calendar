@@ -1,7 +1,6 @@
 import { ipcMain, dialog, app } from 'electron'
 import { database, CalendarEvent } from './database'
 import { baiduSpeech } from './baidu-speech'
-import { emailService } from './email-service'
 import { notificationService } from './notification-service'
 import { reminderScheduler } from './reminder-scheduler'
 import { writeFileSync, readFileSync } from 'fs'
@@ -137,16 +136,6 @@ export function registerIpcHandlers(): void {
     }
   })
 
-  // 测试邮件
-  ipcMain.handle('settings:testEmail', async (_, emailAddress: string) => {
-    try {
-      await emailService.testEmail(emailAddress)
-      return { success: true }
-    } catch (error) {
-      return { success: false, error: (error as Error).message }
-    }
-  })
-
   // 测试通知
   ipcMain.handle('settings:testNotification', async () => {
     try {
@@ -206,7 +195,7 @@ export function registerIpcHandlers(): void {
       })
 
       if (filePath) {
-        writeFileSync(filePath, '\ufeff' + csv, 'utf-8') // 添加BOM支持中文
+        writeFileSync(filePath, '\ufeff' + csv, 'utf-8')
         return { success: true, filePath }
       }
       return { success: false, error: '用户取消' }

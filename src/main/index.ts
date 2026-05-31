@@ -3,18 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { database } from './database'
 import { registerIpcHandlers } from './ipc-handlers'
-import { emailService } from './email-service'
 import { reminderScheduler } from './reminder-scheduler'
-
-// 禁用代理，避免网络连接被劫持
-app.commandLine.appendSwitch('no-proxy-server')
-
-// 设置环境变量禁用代理（影响 Node.js 的网络请求）
-process.env.NO_PROXY = '*'
-process.env.HTTP_PROXY = ''
-process.env.HTTPS_PROXY = ''
-process.env.http_proxy = ''
-process.env.https_proxy = ''
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -64,13 +53,6 @@ app.whenReady().then(async () => {
     console.log('数据库初始化完成')
   }).catch(err => {
     console.error('数据库初始化失败:', err)
-  })
-
-  // 邮件服务异步初始化，不阻塞
-  emailService.init().then(success => {
-    console.log('邮件服务初始化:', success ? '成功' : '失败')
-  }).catch(err => {
-    console.error('邮件服务初始化失败:', err)
   })
 
   // 启动提醒调度器

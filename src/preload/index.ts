@@ -8,6 +8,7 @@ export interface CalendarEvent {
   start_time: string
   end_time?: string
   location?: string
+  category?: string
   reminder_minutes?: number
   is_all_day?: boolean
   created_at?: string
@@ -35,7 +36,6 @@ const speechApi = {
 const settingsApi = {
   getReminder: () => ipcRenderer.invoke('settings:getReminder'),
   updateReminder: (settings: any) => ipcRenderer.invoke('settings:updateReminder', settings),
-  testEmail: (emailAddress: string) => ipcRenderer.invoke('settings:testEmail', emailAddress),
   testNotification: () => ipcRenderer.invoke('settings:testNotification')
 }
 

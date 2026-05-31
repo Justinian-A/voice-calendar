@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import VoiceInput from './VoiceInput'
-import { parseVoiceCommand, generateConfirmMessage, getWeekRange, ParsedCommand } from '../utils/voiceCommand'
+import { parseVoiceCommand, generateConfirmMessage, ParsedCommand } from '../utils/voiceCommand'
 import { CalendarEvent } from '../types/api'
 import './VoicePage.css'
 
@@ -32,14 +32,8 @@ export default function VoicePage({ onEventCreated }: VoicePageProps): JSX.Eleme
         case 'delete':
           await handleDeleteEvent(command)
           break
-        case 'modify':
-          await handleModifyEvent(command)
-          break
         case 'view':
           await handleViewEvents(command)
-          break
-        case 'week':
-          await handleViewWeekEvents()
           break
         case 'search':
           await handleSearchEvents(command)
@@ -114,52 +108,6 @@ export default function VoicePage({ onEventCreated }: VoicePageProps): JSX.Eleme
     onEventCreated?.()
   }
 
-  // 修改事件
-  const handleModifyEvent = async (command: ParsedCommand) => {
-    let events: CalendarEvent[] = []
-
-    if (command.title) {
-      const result = await window.api.event.search(command.title)
-      if (result.success && result.data) {
-        events = result.data
-      }
-    } else if (command.date) {
-      const result = await window.api.event.getByDate(command.date)
-      if (result.success && result.data) {
-        events = result.data
-      }
-    }
-
-    if (events.length === 0) {
-      setError('未找到匹配的事件，请先添加事件')
-      return
-    }
-
-    // 更新找到的事件
-    const event = events[0]
-    const updates: Partial<CalendarEvent> = {}
-    
-    if (command.time) {
-      const eventDate = event.start_time.split(' ')[0]
-      updates.start_time = `${eventDate} ${command.time}:00`
-    }
-    if (command.location) {
-      updates.location = command.location
-    }
-
-    if (event.id && Object.keys(updates).length > 0) {
-      const result = await window.api.event.update(event.id, updates)
-      if (result.success) {
-        setConfirmMessage(`✅ 已修改事件：${event.title}`)
-        onEventCreated?.()
-      } else {
-        setError(`修改失败：${result.error}`)
-      }
-    } else {
-      setConfirmMessage(`📝 找到事件：${event.title}，但未指定修改内容`)
-    }
-  }
-
   // 查看事件
   const handleViewEvents = async (command: ParsedCommand) => {
     const date = command.date || new Date().toISOString().split('T')[0]
@@ -174,26 +122,6 @@ export default function VoicePage({ onEventCreated }: VoicePageProps): JSX.Eleme
       }
     } else {
       setError('获取日程失败')
-    }
-  }
-
-  // 查看本周事件
-  const handleViewWeekEvents = async () => {
-    const { start, end } = getWeekRange()
-    const result = await window.api.event.getByDateRange(start, end)
-
-    if (result.success && result.data) {
-      if (result.data.length === 0) {
-        setConfirmMessage('📅 本周没有安排事件')
-      } else {
-        const eventList = result.data.map((e) => {
-          const date = e.start_time.split(' ')[0]
-          return `• ${date} ${e.title}`
-        }).join('\n')
-        setConfirmMessage(`📅 本周日程（${start} ~ ${end}）：\n${eventList}`)
-      }
-    } else {
-      setError('获取本周日程失败')
     }
   }
 
@@ -270,17 +198,9 @@ export default function VoicePage({ onEventCreated }: VoicePageProps): JSX.Eleme
               <span className="keyword">删除</span>
               <span className="keyword-example">"删除明天的会议"</span>
             </div>
-            <div className="keyword-item modify">
-              <span className="keyword">修改</span>
-              <span className="keyword-example">"修改明天的会议时间"</span>
-            </div>
             <div className="keyword-item view">
               <span className="keyword">查看</span>
               <span className="keyword-example">"查看今天的日程"</span>
-            </div>
-            <div className="keyword-item week">
-              <span className="keyword">本周</span>
-              <span className="keyword-example">"本周有什么安排"</span>
             </div>
             <div className="keyword-item search">
               <span className="keyword">搜索</span>
